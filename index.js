@@ -63,20 +63,23 @@ class Server {
 
             // Seteamos los middlewares
             global.socket_settings.middlewares.map(mdl => {
-                this.io.use(mdl)
-            });
-
-            this.io.on('connection', (socket) => {
-                console.log('Connected Client, Total:', this.io.engine.clientsCount);
-                global.socket_settings.routes.map(({ action, callback }) => {
-                    socket.on(action, (...args) => callback(socket, ...args))
-                });
-
-                socket.on('disconnect'  , () => {
-                    console.log('Disconnected Client, Total:', this.io.engine.clientsCount);
+                global.socket_settings.routes.map(({ name }) => {
+                    this.io.of(name).use(mdl); // Ejecutamos los middlewares principales
                 })
             });
 
+            global.socket_settings.routes.map(({ name, routes }) => {
+                this.io.of(name).on('connection', socket => {
+                    console.log(`Module: ${name}`,'Connected Client, Total:', this.io.engine.clientsCount);
+                    routes.map(({ action, callback }) => {
+                        socket.on(action, (...args) => callback(socket, ...args))
+                    });
+    
+                    socket.on('disconnect'  , () => {
+                        console.log(`Module: ${name}`,'Disconnected Client, Total:', this.io.engine.clientsCount);
+                    })
+                })
+            })
 
             this.server.listen(this.port, () => {
                 this.set_global_socket()

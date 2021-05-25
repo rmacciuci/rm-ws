@@ -1,6 +1,6 @@
 {
   "name": "rm-ws",
-  "version": "0.0.1",
+  "version": "0.0.12",
   "description": "RM WS",
   "main": "index.js",
   "directories": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/Rmacciuci/rm-ws.git"
   },
   "author": "Ramiro Macciuci <ramimacciuci@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Rmacciuci/rm-ws/issues"
   },
