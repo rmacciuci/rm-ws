@@ -1,0 +1,31 @@
+{
+  "name": "rm-ws",
+  "version": "0.0.1",
+  "description": "RM WS",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rmacciuci/rm-ws.git"
+  },
+  "author": "Ramiro Macciuci <ramimacciuci@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rmacciuci/rm-ws/issues"
+  },
+  "homepage": "https://github.com/Rmacciuci/rm-ws#readme",
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "socket.io": "^4.1.2",
+    "socket.io-redis": "^6.1.1",
+    "uuid": "^8.3.2"
+  }
+}
