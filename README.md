@@ -32,6 +32,15 @@ function controller_example(socket, args, arg2) {
     socket.emit('hello', "Mensaje recibido", socket.io);
 }
 
+function controller_example_by_route(socket) {
+    console.log('path /home', socket.uuid);
+    console.log('route', socket.handshake)
+
+    socket.join('home');
+
+    socket.emit('hello', "Mensaje recibido de /home", socket.uuid);
+}
+
 setTimeout(() => {
     setInterval(() => {
         let msg1 = new Sender('room_msg', "este es un mensaje grupal");
@@ -48,6 +57,8 @@ setTimeout(() => {
 }, 2000);
 
 Router('ruta1', controller_example); // Seteamos una ruta
+
+Router(['/home', 'home'], controller_example_by_route); // Seteamos ruta con namespace
 
 const server = new Server({
     socket_settings: {
