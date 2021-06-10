@@ -70,13 +70,13 @@ class Server {
 
             global.socket_settings.routes.map(({ name, routes }) => {
                 this.io.of(name).on('connection', socket => {
-                    console.log(`Module: ${name}`,'Connected Client, Total:', this.io.engine.clientsCount);
+                    console.log(`Module: ${name}`,'Connected Client, Total:', this.io.engine.clientsCount, process.pid);
                     routes.map(({ action, callback }) => {
                         socket.on(action, (...args) => callback(socket, ...args))
                     });
     
                     socket.on('disconnect'  , () => {
-                        console.log(`Module: ${name}`,'Disconnected Client, Total:', this.io.engine.clientsCount);
+                        console.log(`Module: ${name}`,'Disconnected Client, Total:', this.io.engine.clientsCount, process.pid);
                     })
                 })
             })

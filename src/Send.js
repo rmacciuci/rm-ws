@@ -38,8 +38,8 @@ class Sender {
 
     send_by_client_id(client_ids) {
         if(!this.action) return
-        const clients = global.socket.of(this.default_path).sockets;
-
+        const clients = global.socket.of(this.default_path).adapter.nsp.sockets;
+        console.log(clients)
         const client_to_send = [];
 
         clients?.forEach(e => {
