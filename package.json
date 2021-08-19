@@ -1,6 +1,6 @@
 {
   "name": "rm-ws",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "RM WS",
   "main": "index.js",
   "directories": {
@@ -24,6 +24,7 @@
     "nodemon": "^2.0.7"
   },
   "dependencies": {
+    "@socket.io/redis-emitter": "^4.1.0",
     "socket.io": "^4.1.2",
     "socket.io-redis": "^6.1.1",
     "uuid": "^8.3.2"

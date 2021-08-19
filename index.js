@@ -47,10 +47,10 @@ class Server {
         console.log('------------');
     }
 
-    init() {
+    async init() {
         try {
             this.set_server(); // Set server
-    
+            await global.socket_settings.collection.deleteMany()
             // Set IO Server
             this.io = new socketIO.Server(
                 this.server,
@@ -59,6 +59,7 @@ class Server {
 
             if(this.redis_settings) {
                 this.io.adapter(redis_adapter(this.redis_settings)); // Set redis settings and init this.
+                global.socket_settings.redisSettings = this.redis_settings 
             }
 
             // Seteamos los middlewares
@@ -70,12 +71,14 @@ class Server {
 
             global.socket_settings.routes.map(({ name, routes }) => {
                 this.io.of(name).on('connection', socket => {
+                    global.socket_settings.onConnect(socket);
                     console.log(`Module: ${name}`,'Connected Client, Total:', this.io.engine.clientsCount, process.pid);
                     routes.map(({ action, callback }) => {
                         socket.on(action, (...args) => callback(socket, ...args))
                     });
     
                     socket.on('disconnect'  , () => {
+                        global.socket_settings.onDisconnect(socket);
                         console.log(`Module: ${name}`,'Disconnected Client, Total:', this.io.engine.clientsCount, process.pid);
                     })
                 })
@@ -91,17 +94,26 @@ class Server {
     }
 }
 
+function setCollection(collection) {
+    global.socket_settings.collection = collection
+}
+
 function init_rmws() {
     global.socket_settings = {
         routes: [],
-        middlewares: []
+        middlewares: [],
+        onConnect: (socket) => {},
+        onDisconnect: (socket) => {},
+        collection: null,
+        redisSettings: null
     }
 
     global.socket_actions = {
         Middleware,
         Router,
         Sender,
-        Server
+        Server,
+        setCollection
     }
     return true;
 }

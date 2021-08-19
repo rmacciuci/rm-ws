@@ -1,3 +1,6 @@
+const { Emitter } = require("@socket.io/redis-emitter");
+const { createClient } = require("redis");
+
 class Sender {
     special_id = "uuid";
     default_path = "/";
@@ -5,6 +8,12 @@ class Sender {
     constructor(action, ...args) {
         this.action = action;
         this.args   = args;
+
+        if(global.socket_settings.redisSettings) {
+            this.collection = global.socket_settings.collection;
+            this.redisClient = createClient(global.socket_settings.redisSettings);
+            this.emitter = new Emitter(this.redisClient)
+        }
     }
 
     set_special_id(id) {
@@ -19,7 +28,7 @@ class Sender {
 
     send_all() {
         if(!this.action) return
-        global.socket.emit(this.action, ...this.args);
+        this.emitter.emit(this.action, ...this.args);
         return true;
     }
 
@@ -27,7 +36,7 @@ class Sender {
         if(!this.action) return
         for(let room of rooms) {
             try {
-                global.socket.to(room).emit(this.action, ...this.args);
+                this.emitter.to(room).emit(this.action, ...this.args);
             } catch (e) {
                 continue;
             }
@@ -36,21 +45,14 @@ class Sender {
         return true;
     }
 
-    send_by_client_id(client_ids) {
+    async send_by_client_id(client_ids) {
         if(!this.action) return
-        const clients = global.socket.of(this.default_path).adapter.nsp.sockets;
 
-        const client_to_send = [];
+        // Obtenemos los connectionId
+        let ids = await this.collection.find({ userId: { $in: client_ids } }, { connectionId: 1 })        
 
-        clients?.forEach(e => {
-            const id = e[this.special_id];
-
-            if(client_ids.includes(id)) {
-                client_to_send.push(e.id);
-            }
-        })
-
-        this.send_by_socket_id(client_to_send);
+        ids = ids.map(e => e.connectionId)
+        this.send_by_socket_id(ids);
 
         return true;
     }
@@ -59,7 +61,7 @@ class Sender {
         if(!this.action) return
         for(let socket_id of socket_ids) {
             try {
-                global.socket.to(socket_id).emit(this.action, ...this.args);
+                this.emitter.to(socket_id).emit(this.action, ...this.args);
             } catch (e) {
                 continue;
             }
