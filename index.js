@@ -58,7 +58,10 @@ class Server {
             );
 
             if(this.redis_settings) {
-                this.io.adapter(redis_adapter(this.redis_settings)); // Set redis settings and init this.
+                const pubClient = redis.createClient(this.redis_settings);
+                const subClient = pubClient.duplicate();
+
+                this.io.adapter(redis_adapter.createAdapter({ pubClient, subClient })); // Set redis settings and init this.
                 global.socket_settings.redisSettings = this.redis_settings 
             }
 
