@@ -9,6 +9,8 @@ const Middleware    = require('./src/Middleware');
 const Router        = require('./src/Router');
 const Sender = require('./src/Send');
 
+const redis = require('redis')
+
 class Server {
     redis_settings      = {};
     socketIO_settings   = {};
